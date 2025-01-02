@@ -5,7 +5,6 @@ public:
     MinStack() {}
 
     void push(int val) {
-        cout << "push";
         st.push(val);
         if (mn.size() == 0 || mn.top() >= val) {
             mn.push(val);
@@ -13,10 +12,6 @@ public:
     }
 
     void pop() {
-        cout << "pop";
-        cout << st.top()  ;
-        cout << mn.top()  ;
-
         if (st.top() == mn.top()) {
             mn.pop();
         }
