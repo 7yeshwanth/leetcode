@@ -1,46 +1,41 @@
-bool u(string s, string p, int ns, int np, int is, int ip,
-       vector<vector<int>>& dp) {
-    if (is == ns && ip == np) {
-        return 1;
-    }
-    if (is >= ns) {
-        if (ip == np - 1 && p[ip] == '*')
-            return 1;
-        return 0;
-    }
-    if (ip >= np) {
-        return 0;
-    }
-    if (dp[is][ip] == -1) {
-        if (s[is] == p[ip] || p[ip] == '?') {
-            dp[is][ip] = u(s, p, ns, np, is + 1, ip + 1, dp);
-            return dp[is][ip];
-        }
-        if (p[ip] == '*') {
-            dp[is][ip] = u(s, p, ns, np, is, ip + 1, dp) ||
-                         u(s, p, ns, np, is + 1, ip, dp);
-            return dp[is][ip];
-        }
-    } else
-        return dp[is][ip];
-    return 0;
-}
-
 class Solution {
+private:
+    bool solveMem(string& s, string& p, int i, int j, vector<vector<int>>& dp) {
+        // base case
+        if (i == 0 && j == 0)
+            return true;
+
+        if (i > 0 && j == 0)
+            return false;
+
+        if (i == 0 && j > 0) {
+            for (int k = 1; k <= j; k++) {
+                if (p[k - 1] != '*')
+                    return false;
+            }
+            return true;
+        }
+
+        if (dp[i][j] != -1)
+            return dp[i][j];
+
+        // match
+        if (s[i - 1] == p[j - 1] || p[j - 1] == '?')
+            return dp[i][j] = solveMem(s, p, i - 1, j - 1, dp);
+        else if (p[j - 1] == '*')
+            return dp[i][j] = (solveMem(s, p, i - 1, j, dp) ||
+                               solveMem(s, p, i, j - 1, dp));
+        else
+            return false;
+    }
+
 public:
     bool isMatch(string s, string p) {
-        int ns = s.size(), np = p.size();
-        if (ns == np && ns == 0)
-            return 1;
-        string pp;
-        pp += p[0];
-        for (int i = 1; i < np; i++) {
-            if (p[i] == '*' && pp.back() == p[i])
-                continue;
-            pp += p[i];
-        }
-        np = pp.size();
-        vector<vector<int>> dp(ns, vector<int>(np, -1));
-        return u(s, pp, ns, np, 0, 0, dp);
-    }
+
+        int n = s.length();
+        int m = p.length();
+
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, -1));
+        return solveMem(s, p, n, m, dp);
+    };
 };
