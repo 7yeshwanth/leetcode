@@ -1,12 +1,10 @@
-class node
-{
+class node {
 public:
     int key;
     int val;
-    node *next;
-    node *prev;
-    node(int _key, int value)
-    {
+    node* next;
+    node* prev;
+    node(int _key, int value) {
         key = _key;
         val = value;
         next = nullptr;
@@ -14,27 +12,23 @@ public:
     }
 };
 
-class LRUCache
-{
+class LRUCache {
 public:
     int cap;
-    node *head = new node(-1, -1);
-    node *tail = new node(-1, -1);
-    unordered_map<int, node *> m;
-    LRUCache(int capacity)
-    {
+    node* head = new node(-1, -1);
+    node* tail = new node(-1, -1);
+    unordered_map<int, node*> m;
+    LRUCache(int capacity) {
         cap = capacity;
         head->next = tail;
         tail->prev = head;
     }
 
-    int get(int key)
-    {
-        if (m.find(key) == m.end())
-        {
+    int get(int key) {
+        if (m.find(key) == m.end()) {
             return -1;
         }
-        node *p = m[key];
+        node* p = m[key];
         p->prev->next = p->next;
         p->next->prev = p->prev;
         head->next->prev = p;
@@ -44,12 +38,10 @@ public:
         return p->val;
     }
 
-    void put(int key, int value)
-    {
-        if (m.find(key) != m.end())
-        {
+    void put(int key, int value) {
+        if (m.find(key) != m.end()) {
             m[key]->val = value;
-            node *p = m[key];
+            node* p = m[key];
             p->prev->next = p->next;
             p->next->prev = p->prev;
             head->next->prev = p;
@@ -58,14 +50,17 @@ public:
             p->prev = head;
             return;
         }
-        if (m.size() >= cap)
-        {
-            auto x = m.erase(tail->prev->key);
-            cout << "Erase: " << x << endl;
-            tail->prev = tail->prev->prev;
-            tail->prev->next = tail;
+
+        if (m.size() >= cap) {
+            node* toDelete = tail->prev;
+            m.erase(toDelete->key);
+            tail->prev = toDelete->prev;
+            toDelete->prev->next = tail;
+
+            delete toDelete;
         }
-        node *n = new node(key, value);
+
+        node* n = new node(key, value);
         m[key] = n;
         n->next = head->next;
         head->next->prev = n;
